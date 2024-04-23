@@ -34,13 +34,22 @@ print(lifeTable)
 
 time = range(0, maxTime+1)
 kmSurvival = lifeTable['Kaplan-Meier'].values
-kmHazard = -np.log(kmSurvival)
+kmHazard = np.diff(-np.log(kmSurvival))
 
-fhHazard = lifeTable['Flemington-Harrington'].values
-fhSurvival = np.exp(-fhHazard)
+fhHazard = np.diff(lifeTable['Flemington-Harrington'].values)
+fhSurvival = np.exp(-lifeTable['Flemington-Harrington'].values)
+
+plt.plot(time[1:], kmHazard, label='Kaplan-Meier')
+plt.plot(time[1:], fhHazard, label='Flemington-Herrington')
+plt.grid()
+plt.title('Hazard Function')
+plt.xlabel('Time')
+plt.ylabel('Probability')
+plt.legend()
+plt.show()
 
 plt.plot(time, kmSurvival, label='Kaplan-Meier')
-# plt.plot(time, fhSurvival, label='Flemington-Herrington')
+plt.plot(time, fhSurvival, label='Flemington-Herrington')
 plt.grid()
 plt.title('Survival Function')
 plt.xlabel('Time')

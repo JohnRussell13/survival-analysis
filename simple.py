@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 rawData = [2, 5, 7, 1, 3, 4, 6, 2, 4, 2, 3, 5, 1, 3, 6, 3, 2, 1, 2, 4]
 sortedRawData = np.sort(rawData)
 
-columns = ['Time', 'Start', 'Fail', 'Censored', 'At Risk', 'Surv Prob', 'Cum Surv']
+columns = ['Time', 'Start', 'Fail', 'Censored', 'At Risk', 'Kaplan-Meier', 'Flemington-Harrington']
 lifeTable = pd.DataFrame(columns=columns)
 
 totalCount = np.size(sortedRawData)
@@ -23,17 +23,27 @@ for i in range(0, maxTime+1):
         break
     P = (r - d)/r
     S = P * P_old
+    H = d/r
 
     P_old = P
     currentCount = n - d - w
-    row = [t, n, d, w, r, P, S]
+    row = [t, n, d, w, r, S, H]
     lifeTable.loc[len(lifeTable)] = row
 
 print(lifeTable)
 
-plt.plot(lifeTable['Time'], lifeTable['Cum Surv'])
+time = range(0, maxTime+1)
+kmSurvival = lifeTable['Kaplan-Meier'].values
+kmHazard = -np.log(kmSurvival)
+
+fhHazard = lifeTable['Flemington-Harrington'].values
+fhSurvival = np.exp(-fhHazard)
+
+plt.plot(time, kmSurvival, label='Kaplan-Meier')
+# plt.plot(time, fhSurvival, label='Flemington-Herrington')
 plt.grid()
-plt.title('Cumulative Survival Probability')
+plt.title('Survival Function')
 plt.xlabel('Time')
 plt.ylabel('Probability')
+plt.legend()
 plt.show()
